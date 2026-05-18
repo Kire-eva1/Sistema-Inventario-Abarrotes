@@ -7,12 +7,21 @@ const db = require('./db');
 const app = express();
 const SECRET = "clave_super_secreta";
 
-// Middleware
+//Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../frontend')));
+app.use(express.static(__dirname));
 
-// Middleware de autenticación
+//pagina principal
+app.get('/', (req, res) => {
+
+    res.sendFile(
+        path.join(__dirname, 'index.html')
+    );
+
+});
+
+// Token
 function verificarToken(req, res, next) {
     const token = req.headers['authorization'];
     if (!token) return res.status(403).json({ error: "Token requerido" });

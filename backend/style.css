@@ -1,0 +1,102 @@
+body {
+    font-family: sans-serif;
+    margin: 20px;
+    background-color: #f4f4f4;
+}
+
+header {
+    background-color: #333;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+nav button {
+    background-color: #555;
+    color: white;
+    padding: 8px 15px;
+    margin: 0 5px;
+    border: none;
+    cursor: pointer;
+}
+
+main {
+    background-color: white;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+form input[type="text"],
+form input[type="password"],
+form input[type="number"],
+form select,
+form textarea {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+form button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+form button[type="button"] {
+    background-color: #6c757d;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th,
+table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+table th {
+    background-color: #f2f2f2;
+}
+
+/* Estilos para las alertas */
+.alert-rojo {
+    background-color: #ffcccc; /* Rojo claro */
+    color: #cc0000; /* Rojo oscuro */
+    font-weight: bold;
+}
+
+.alert-naranja {
+    background-color: #ffe0b3; /* Naranja claro */
+    color: #e68a00; /* Naranja oscuro */
+    font-weight: bold;
+}
+
+.alert-amarillo {
+    background-color: #ffffcc; /* Amarillo claro */
+    color: #cc9900; /* Amarillo oscuro */
+    font-weight: bold;
+}
+
+.alert-verde {
+    background-color: #d4edda; /* Verde claro */
+    color: #155724; /* Verde oscuro */
+}
