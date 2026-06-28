@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
@@ -75,16 +76,31 @@ app.get('/categorias', (req, res) => {
 
 // Ruta de alertas (protegida)
 app.get('/alertas', verificarToken, (req, res) => {
+
     const sql = `
-        SELECT p.*, c.nombre AS categoria 
+        SELECT 
+            p.*,
+            c.nombre AS categoria
         FROM productos p
-        JOIN categorias c ON p.categoria_id = c.id
-        WHERE p.fecha_vencimiento <= DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+        LEFT JOIN categorias c 
+            ON p.categoria_id = c.id
+        WHERE 
+            p.fecha_vencimiento IS NOT NULL
+        AND
+            p.fecha_vencimiento <= DATE_ADD(CURDATE(), INTERVAL 7 DAY)
     `;
+
     db.query(sql, (err, result) => {
-        if (err) return res.status(500).json(err);
+
+        if (err) {
+            console.log(err);
+            return res.status(500).json(err);
+        }
+
         res.json(result);
+
     });
+
 });
 
 /* ================= SERVIDOR ================= */

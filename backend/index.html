@@ -486,19 +486,19 @@ async function guardar()
 
             const body = {
                 nombre: document.getElementById("nombre").value,
-                categoria: document.getElementById("categoria").value,
+                categoria_id: document.getElementById("categoria").value,
                 fecha_vencimiento: document.getElementById("fecha").value || null,
                 cantidad: parseInt(document.getElementById("cantidad").value) || 0,
                 stock_minimo: parseInt(document.getElementById("stock").value) || 0,
                 codigo_barras: document.getElementById("codigo_barras").value,
                 marca: document.getElementById("marca").value,
                 sku: document.getElementById("sku").value,
-                proveedor: document.getElementById("proveedor").value,
+                proveedor_id: 1,
                 numero_documento: document.getElementById("numero_documento").value,
                 fecha_elaboracion: document.getElementById("fecha_elaboracion").value || null
             };
 
-            if (!body.nombre || !body.categoria || !body.fecha_vencimiento) {
+            if (!body.nombre || !body.categoria_id || !body.fecha_vencimiento) {
 
                 alert("Por favor completa los campos obligatorios (*)");
 
