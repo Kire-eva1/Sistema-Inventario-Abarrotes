@@ -1,4 +1,4 @@
-Aviso-Alerta-v2
+Aviso-Alerta
 
 Sistema de Gestión de Inventario para Abarrotes.
 
@@ -59,7 +59,7 @@ Arquitectura del Sistema
 
 El proyecto utiliza una arquitectura separada por capas:
 
-Aviso-Alerta-v2
+Aviso-Alerta
 
 │
 ├── backend
