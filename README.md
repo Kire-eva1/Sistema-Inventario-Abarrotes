@@ -179,9 +179,9 @@ Navegador web actualizado.
 Instalación del Proyecto.
 
 1. Clonar repositorio
-git clone https://github.com/Kire-eva1/Aviso-Alerta-v2.git
+git clone https://github.com/Kire-eva1/Aviso-Alerta.git
 
-Ingresar a la carpeta: cd Aviso-Alerta-v2
+Ingresar a la carpeta: cd Aviso-Alerta
 
 2. Instalación de dependencias
 
@@ -223,6 +223,7 @@ Ejecución del Sistema.
 Iniciar aplicación:  npm start
 
 Servidor disponible:  http://localhost:3000
+                      http://localhost:${PORT}
 
 
 
