@@ -1,17 +1,29 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const jwt = require('jsonwebtoken');
-const path = require('path');
-const db = require('./db');
+require("dotenv").config();
+
+const express = require("express");
+const cors = require("cors");
+const jwt = require("jsonwebtoken");
+const path = require("path");
+
+const db = require("./db");
+
+const authRoutes = require("./routes/auth.routes");
+const productosRoutes = require("./routes/productos.routes");
+const usuariosRoutes = require("./routes/usuarios.routes");
 
 const app = express();
-const SECRET = "clave_super_secreta";
+
+const PORT = process.env.PORT || 3000;
+const SECRET = process.env.JWT_SECRET;
+
 
 //Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
+//rutas
+app.use("/auth", authRoutes);
 
 //pagina principal
 app.get('/', (req, res) => {
@@ -24,47 +36,47 @@ app.get('/', (req, res) => {
 
 // Token
 function verificarToken(req, res, next) {
-    const token = req.headers['authorization'];
-    if (!token) return res.status(403).json({ error: "Token requerido" });
+
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+        return res.status(401).json({
+            error: "Token requerido"
+        });
+    }
+
+
+    const token = authHeader.replace("Bearer ", "");
 
     jwt.verify(token, SECRET, (err, decoded) => {
-        if (err) return res.status(401).json({ error: "Token inválido" });
+
+        if (err) {
+            return res.status(401).json({
+                error: "Token inválido"
+            });
+        }
+
         req.user = decoded;
+
         next();
+
     });
+
 }
 
-/* ================= LOGIN ================= */
-app.post('/login', (req, res) => {
-    const { usuario, password } = req.body;
-    db.query(
-        `SELECT u.*, r.nombre AS rol 
-         FROM usuarios u
-         JOIN roles r ON u.rol_id = r.id
-         WHERE u.usuario = ?`,
-        [usuario],
-        (err, result) => {
-            if (err) return res.status(500).json({ error: "Error BD" });
-            if (result.length === 0 || result[0].password !== password) {
-                return res.status(401).json({ error: "Credenciales incorrectas" });
-            }
-            const user = result[0];
-            const token = jwt.sign({ id: user.id, usuario: user.usuario, rol: user.rol }, SECRET, { expiresIn: '4h' });
-            res.json({ token });
-        }
-    );
-});
 
 /* ================= RUTAS MODULARES ================= */
 // Importamos las rutas
-const productosRoutes = require('./routes/productos.routes');
-const usuariosRoutes = require('./routes/usuarios.routes');
+//   const productosRoutes = require('./routes/productos.routes');
+//   const usuariosRoutes = require('./routes/usuarios.routes');
 // const categoriasRoutes = require('./routes/categorias.routes'); // Descomenta cuando los tengas listos
 // const alertasRoutes = require('./routes/alertas.routes');       // Descomenta cuando los tengas listos
 
 // Aplicamos las rutas con protección JWT donde sea necesario
-app.use('/productos', verificarToken, productosRoutes);
+app.use('/auth', authRoutes);
 app.use('/usuarios', usuariosRoutes);
+app.use('/productos', verificarToken, productosRoutes);
+
 
 // Rutas públicas (ejemplo categorías si quieres que cualquiera las vea)
 app.get('/categorias', (req, res) => {
@@ -103,7 +115,21 @@ app.get('/alertas', verificarToken, (req, res) => {
 
 });
 
+/* ========MANEJO DE ERRORES=============== */
+app.use((err, req, res, next) => {
+
+    console.error("Error:", err);
+
+    res.status(500).json({
+
+        success: false,
+
+        message: "Error interno del servidor."
+
+    });
+
+});
 /* ================= SERVIDOR ================= */
-app.listen(3000, () => {
-    console.log("Servidor modular corriendo en http://localhost:3000");
+app.listen(PORT, () => {
+    console.log("Servidor modular corriendo en http://localhost:${PORT}");
 });
