@@ -1,52 +1,94 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const db = require('../db');
+const bcrypt = require("bcryptjs");
+const db = require("../db");
 
-router.post('/', (req, res) => {
 
-    const {
-        usuario,
-        correo,
-        password,
-        rol_id
-    } = req.body;
+// CREAR USUARIO
 
-    // VALIDACIÓN
-    if (!usuario || !password) {
-        return res.status(400).json({
-            error: 'Usuario y contraseña requeridos'
-        });
-    }
+router.post("/", async (req, res) => {
 
-    // SQL
-    const sql = `
-        INSERT INTO usuarios
-        (usuario, correo, password, rol_id)
-        VALUES (?, ?, ?, ?)
-    `;
+    try {
 
-    db.query(
-        sql,
-        [usuario, correo, password, rol_id],
-        (err, result) => {
+        const {
+            usuario,
+            correo,
+            password,
+            rol_id
+        } = req.body;
 
-            if (err) {
 
-                console.log(err);
+        if (!usuario || !password) {
 
-                return res.status(500).json({
-                    error: 'Error al crear usuario'
-                });
-            }
+            return res.status(400).json({
 
-            res.json({
-                mensaje: 'Usuario creado correctamente'
+                error: "Usuario y contraseña requeridos"
+
             });
 
         }
-    );
+
+
+        const passwordHash = await bcrypt.hash(
+            password,
+            10
+        );
+
+
+        const sql = `
+            INSERT INTO usuarios
+            (
+                usuario,
+                correo,
+                password,
+                rol_id
+            )
+            VALUES (?, ?, ?, ?)
+        `;
+
+
+        const [resultado] = await db.query(
+            sql,
+            [
+                usuario,
+                correo,
+                passwordHash,
+                rol_id
+            ]
+        );
+
+
+        res.json({
+
+            mensaje:"Usuario creado correctamente",
+
+            id:resultado.insertId
+
+        });
+
+
+
+    } catch(error) {
+
+
+        console.error(
+            "Error creando usuario:",
+            error
+        );
+
+
+        res.status(500).json({
+
+            error:"Error al crear usuario"
+
+        });
+
+
+    }
+
 
 });
+
 
 module.exports = router;

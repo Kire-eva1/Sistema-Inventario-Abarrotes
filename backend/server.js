@@ -5,131 +5,222 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const path = require("path");
 
-const db = require("./db");
-
-const authRoutes = require("./routes/auth.routes");
-const productosRoutes = require("./routes/productos.routes");
-const usuariosRoutes = require("./routes/usuarios.routes");
-
 const app = express();
 
 const PORT = process.env.PORT || 3000;
 const SECRET = process.env.JWT_SECRET;
 
 
-//Middleware
+// Base de datos
+const db = require("./db");
+
+
+// Rutas
+const authRoutes = require("./routes/auth.routes");
+const productosRoutes = require("./routes/productos.routes");
+const usuariosRoutes = require("./routes/usuarios.routes");
+const categoriasRoutes = require("./routes/categorias.routes");
+
+
+// ================= MIDDLEWARE =================
+
 app.use(cors());
+
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+app.use(express.urlencoded({
+    extended: true
+}));
+
+
+// Archivos estáticos frontend
 app.use(express.static(__dirname));
-//rutas
-app.use("/auth", authRoutes);
 
-//pagina principal
-app.get('/', (req, res) => {
 
-    res.sendFile(
-        path.join(__dirname, 'index.html')
-    );
 
-});
+// ================= MIDDLEWARE JWT =================
 
-// Token
 function verificarToken(req, res, next) {
 
     const authHeader = req.headers.authorization;
 
+
     if (!authHeader) {
+
         return res.status(401).json({
-            error: "Token requerido"
+            success: false,
+            message: "Token requerido"
         });
+
     }
 
 
-    const token = authHeader.replace("Bearer ", "");
+    const token = authHeader.split(" ")[1];
 
-    jwt.verify(token, SECRET, (err, decoded) => {
 
-        if (err) {
+    jwt.verify(token, SECRET, (error, decoded) => {
+
+
+        if (error) {
+
             return res.status(401).json({
-                error: "Token inválido"
+
+                success: false,
+
+                message: "Token inválido o expirado"
+
             });
+
         }
+
 
         req.user = decoded;
 
         next();
+
 
     });
 
 }
 
 
-/* ================= RUTAS MODULARES ================= */
-// Importamos las rutas
-//   const productosRoutes = require('./routes/productos.routes');
-//   const usuariosRoutes = require('./routes/usuarios.routes');
-// const categoriasRoutes = require('./routes/categorias.routes'); // Descomenta cuando los tengas listos
-// const alertasRoutes = require('./routes/alertas.routes');       // Descomenta cuando los tengas listos
 
-// Aplicamos las rutas con protección JWT donde sea necesario
-app.use('/auth', authRoutes);
-app.use('/usuarios', usuariosRoutes);
-app.use('/productos', verificarToken, productosRoutes);
+// ================= RUTAS =================
 
 
-// Rutas públicas (ejemplo categorías si quieres que cualquiera las vea)
-app.get('/categorias', (req, res) => {
-    db.query('SELECT * FROM categorias', (err, result) => {
-        if (err) return res.status(500).json(err);
-        res.json(result);
-    });
+// Login y autenticación
+app.use("/auth", authRoutes);
+
+
+// Usuarios
+app.use(
+    "/usuarios",
+    verificarToken,
+    usuariosRoutes
+);
+
+
+// Productos
+app.use(
+    "/productos",
+    verificarToken,
+    productosRoutes
+);
+
+
+// Categorías
+app.use(
+    "/categorias",
+    verificarToken,
+    categoriasRoutes
+);
+
+
+
+
+// ================= FRONTEND =================
+
+app.get("/", (req, res) => {
+
+    res.sendFile(
+        path.join(__dirname, "index.html")
+    );
+
 });
 
-// Ruta de alertas (protegida)
-app.get('/alertas', verificarToken, (req, res) => {
 
-    const sql = `
-        SELECT 
-            p.*,
-            c.nombre AS categoria
-        FROM productos p
-        LEFT JOIN categorias c 
-            ON p.categoria_id = c.id
-        WHERE 
-            p.fecha_vencimiento IS NOT NULL
-        AND
-            p.fecha_vencimiento <= DATE_ADD(CURDATE(), INTERVAL 7 DAY)
-    `;
 
-    db.query(sql, (err, result) => {
 
-        if (err) {
-            console.log(err);
-            return res.status(500).json(err);
+// ================= ALERTAS =================
+
+app.get(
+    "/alertas",
+    verificarToken,
+    async (req, res) => {
+
+        try {
+
+            const sql = `
+                SELECT 
+                    p.*,
+                    c.nombre AS categoria
+
+                FROM productos p
+
+                LEFT JOIN categorias c
+                ON p.categoria_id = c.id
+
+                WHERE 
+                    p.fecha_vencimiento IS NOT NULL
+
+                AND
+
+                    p.fecha_vencimiento <= DATE_ADD(CURDATE(), INTERVAL 7 DAY)
+            `;
+
+
+            const [result] = await db.query(sql);
+
+
+            res.json(result);
+
+
+        } catch (error) {
+
+
+            console.error(
+                "Error al obtener alertas:",
+                error.message
+            );
+
+
+            res.status(500).json({
+
+                success: false,
+
+                message: "Error interno del servidor"
+
+            });
+
         }
 
-        res.json(result);
+    }
+);
 
-    });
 
-});
 
-/* ========MANEJO DE ERRORES=============== */
+
+// ================= MANEJO DE ERRORES =================
+
 app.use((err, req, res, next) => {
 
-    console.error("Error:", err);
+
+    console.error(
+        "Error:",
+        err
+    );
+
 
     res.status(500).json({
 
         success: false,
 
-        message: "Error interno del servidor."
+        message: "Error interno del servidor"
 
     });
 
+
 });
-/* ================= SERVIDOR ================= */
+
+
+
+
+// ================= INICIO SERVIDOR =================
+
 app.listen(PORT, () => {
-    console.log("Servidor modular corriendo en http://localhost:${PORT}");
+
+
+    console.log('Servidor modular corriendo en http://localhost:${PORT}');
+
+
 });

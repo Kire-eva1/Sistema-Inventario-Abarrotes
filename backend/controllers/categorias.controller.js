@@ -1,12 +1,145 @@
-{ const sql = `
-        SELECT p.*, c.nombre AS categoria
-        FROM productos p
-        JOIN categorias c ON p.categoria_id = c.id
-        WHERE p.fecha_vencimiento <= CURDATE() + INTERVAL 7 DAY
-    `;
+const db = require("../db");
 
-    db.query(sql, (err, result) => {
-        if (err) return res.status(500).json(err);
-        res.json(result);
-    });
+
+// ===============================
+// OBTENER TODAS LAS CATEGORÍAS
+// ===============================
+
+exports.obtenerCategorias = async (req, res) => {
+
+    try {
+
+        const sql = `
+            SELECT 
+                id,
+                nombre
+            FROM categorias
+            ORDER BY nombre ASC
+        `;
+
+
+        const [rows] = await db.query(sql);
+
+
+        res.json({
+
+            success: true,
+
+            data: rows
+
+        });
+
+
+    } catch(error) {
+
+
+        console.error(
+            "Error al obtener categorías:",
+            error
+        );
+
+
+        res.status(500).json({
+
+            success:false,
+
+            message:"Error al obtener categorías"
+
+        });
+
+
+    }
+
+};
+
+
+
+
+// ===============================
+// CREAR CATEGORÍA
+// ===============================
+
+exports.crearCategoria = async (req,res)=>{
+
+
+    try {
+
+
+        const {nombre}=req.body;
+
+
+
+        if(!nombre){
+
+
+            return res.status(400).json({
+
+                success:false,
+
+                message:"Debe ingresar nombre de categoría"
+
+            });
+
+
+        }
+
+
+
+        const sql = `
+
+            INSERT INTO categorias
+            (
+                nombre
+            )
+
+            VALUES(?)
+
+        `;
+
+
+
+        const [resultado] = await db.query(
+
+            sql,
+
+            [nombre]
+
+        );
+
+
+
+        res.json({
+
+            success:true,
+
+            message:"Categoría creada correctamente",
+
+            id:resultado.insertId
+
+        });
+
+
+
+    } catch(error){
+
+
+        console.error(
+            "Error al crear categoría:",
+            error
+        );
+
+
+
+        res.status(500).json({
+
+            success:false,
+
+            message:"Error interno del servidor"
+
+        });
+
+
+    }
+
+
 };

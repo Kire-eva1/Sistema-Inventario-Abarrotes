@@ -1,84 +1,179 @@
-const db = require('../db');
+const db = require("../db");
 
 
-// ================= GET TODOS =================
-exports.obtenerProductos = (req, res) => {
 
-    const sql = `
-        SELECT 
-            p.*,
-            c.nombre AS categoria,
-            pr.nombre AS proveedor
-        FROM productos p
-        LEFT JOIN categorias c 
+// ================= OBTENER TODOS LOS PRODUCTOS =================
+
+exports.obtenerProductos = async (req, res) => {
+
+    try {
+
+
+        const sql = `
+
+            SELECT 
+                p.*,
+
+                c.nombre AS categoria,
+
+                pr.nombre AS proveedor
+
+
+            FROM productos p
+
+
+            LEFT JOIN categorias c
+
             ON p.categoria_id = c.id
-        LEFT JOIN proveedores pr
+
+
+            LEFT JOIN proveedores pr
+
             ON p.proveedor_id = pr.id
-    `;
 
-    db.query(sql, (err, result) => {
 
-        if (err) {
-            console.error("Error al obtener productos:", err);
-            return res.status(500).json(err);
-        }
+            ORDER BY p.id DESC
 
-        res.json(result);
+        `;
 
-    });
+
+
+        const [productos] = await db.query(sql);
+
+
+
+        res.json({
+
+            success: true,
+
+            data: productos
+
+        });
+
+
+
+    } catch (error) {
+
+
+        console.error(
+            "Error al obtener productos:",
+            error.message
+        );
+
+
+        res.status(500).json({
+
+            success: false,
+
+            message: "Error al obtener productos"
+
+        });
+
+
+    }
 
 };
 
 
-// ================= GET POR ID =================
-exports.obtenerProductoPorId = (req, res) => {
 
-    const { id } = req.params;
 
-    const sql = `
-        SELECT *
-        FROM productos
-        WHERE id = ?
-    `;
 
-    db.query(sql, [id], (err, result) => {
 
-        if (err) {
-            console.error("Error al obtener producto:", err);
-            return res.status(500).json(err);
+// ================= OBTENER PRODUCTO POR ID =================
+
+exports.obtenerProductoPorId = async (req, res) => {
+
+
+    try {
+
+
+        const { id } = req.params;
+
+
+
+        const sql = `
+
+            SELECT *
+
+            FROM productos
+
+            WHERE id = ?
+
+        `;
+
+
+
+        const [rows] = await db.query(
+            sql,
+            [id]
+        );
+
+
+
+        if (rows.length === 0) {
+
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "Producto no encontrado"
+
+            });
+
+
         }
 
-        res.json(result[0]);
 
-    });
+
+        res.json({
+
+            success: true,
+
+            data: rows[0]
+
+        });
+
+
+
+    } catch (error) {
+
+
+        console.error(
+            "Error al obtener producto:",
+            error.message
+        );
+
+
+        res.status(500).json({
+
+            success: false,
+
+            message: "Error interno del servidor"
+
+        });
+
+
+    }
 
 };
 
 
-// ================= POST =================
-exports.crearProducto = (req, res) => {
 
-    const {
-        nombre,
-        descripcion,
-        categoria_id,
-        proveedor_id,
-        fecha_elaboracion,
-        fecha_vencimiento,
-        cantidad,
-        stock_minimo,
-        stock_actual,
-        codigo_barras,
-        marca,
-        sku,
-        numero_documento,
-        precio_costo,
-        precio_venta
-    } = req.body;
 
-    const sql = `
-        INSERT INTO productos
-        (
+
+
+
+// ================= CREAR PRODUCTO =================
+
+exports.crearProducto = async (req, res) => {
+
+
+    try {
+
+
+        const {
+
             nombre,
             descripcion,
             categoria_id,
@@ -94,143 +189,307 @@ exports.crearProducto = (req, res) => {
             numero_documento,
             precio_costo,
             precio_venta
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
 
-    const valores = [
-        nombre,
-        descripcion,
-        categoria_id,
-        proveedor_id,
-        fecha_elaboracion,
-        fecha_vencimiento,
-        cantidad,
-        stock_minimo,
-        stock_actual,
-        codigo_barras,
-        marca,
-        sku,
-        numero_documento,
-        precio_costo,
-        precio_venta
-    ];
+        } = req.body;
 
-    db.query(sql, valores, (err, result) => {
 
-        if (err) {
 
-            console.error("ERROR SQL:", err);
+        const sql = `
 
-            return res.status(500).json({
-                error: err.sqlMessage
-            });
+            INSERT INTO productos
 
-        }
+            (
 
-        res.json({
-            message: "Producto guardado correctamente"
+                nombre,
+                descripcion,
+                categoria_id,
+                proveedor_id,
+                fecha_elaboracion,
+                fecha_vencimiento,
+                cantidad,
+                stock_minimo,
+                stock_actual,
+                codigo_barras,
+                marca,
+                sku,
+                numero_documento,
+                precio_costo,
+                precio_venta
+
+            )
+
+
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+
+        `;
+
+
+
+        const valores = [
+
+            nombre,
+            descripcion,
+            categoria_id,
+            proveedor_id,
+            fecha_elaboracion,
+            fecha_vencimiento,
+            cantidad,
+            stock_minimo,
+            stock_actual,
+            codigo_barras,
+            marca,
+            sku,
+            numero_documento,
+            precio_costo,
+            precio_venta
+
+        ];
+
+
+
+        const [result] = await db.query(
+            sql,
+            valores
+        );
+
+
+
+        res.status(201).json({
+
+            success: true,
+
+            message: "Producto creado correctamente",
+
+            id: result.insertId
+
         });
 
-    });
+
+
+    } catch (error) {
+
+
+        console.error(
+            "Error al crear producto:",
+            error.message
+        );
+
+
+        res.status(500).json({
+
+            success: false,
+
+            message: "Error al crear producto"
+
+        });
+
+
+    }
 
 };
 
 
-// ================= PUT =================
-exports.actualizarProducto = (req, res) => {
 
-    const { id } = req.params;
 
-    const {
-        nombre,
-        categoria_id,
-        fecha_vencimiento,
-        cantidad,
-        stock_minimo,
-        codigo_barras,
-        marca,
-        sku,
-        proveedor_id,
-        numero_documento,
-        fecha_elaboracion,
-        precio_costo,
-        precio_venta
-    } = req.body;
 
-    const sql = `
-        UPDATE productos
-        SET
-            nombre = ?,
-            categoria_id = ?,
-            fecha_vencimiento = ?,
-            cantidad = ?,
-            stock_minimo = ?,
-            codigo_barras = ?,
-            marca = ?,
-            sku = ?,
-            proveedor_id = ?,
-            numero_documento = ?,
-            fecha_elaboracion = ?,
-            precio_costo = ?,
-            precio_venta = ?
-        WHERE id = ?
-    `;
 
-    const valores = [
-        nombre,
-        categoria_id,
-        fecha_vencimiento,
-        cantidad,
-        stock_minimo,
-        codigo_barras,
-        marca,
-        sku,
-        proveedor_id,
-        numero_documento,
-        fecha_elaboracion,
-        precio_costo,
-        precio_venta,
-        id
-    ];
 
-    db.query(sql, valores, (err, result) => {
+// ================= ACTUALIZAR PRODUCTO =================
 
-        if (err) {
-            console.error("Error al actualizar:", err);
-            return res.status(500).json(err);
-        }
+exports.actualizarProducto = async (req, res) => {
+
+
+    try {
+
+
+        const { id } = req.params;
+
+
+
+        const {
+
+            nombre,
+            categoria_id,
+            fecha_vencimiento,
+            cantidad,
+            stock_minimo,
+            codigo_barras,
+            marca,
+            sku,
+            proveedor_id,
+            numero_documento,
+            fecha_elaboracion,
+            precio_costo,
+            precio_venta
+
+
+        } = req.body;
+
+
+
+        const sql = `
+
+            UPDATE productos
+
+            SET
+
+                nombre = ?,
+
+                categoria_id = ?,
+
+                fecha_vencimiento = ?,
+
+                cantidad = ?,
+
+                stock_minimo = ?,
+
+                codigo_barras = ?,
+
+                marca = ?,
+
+                sku = ?,
+
+                proveedor_id = ?,
+
+                numero_documento = ?,
+
+                fecha_elaboracion = ?,
+
+                precio_costo = ?,
+
+                precio_venta = ?
+
+
+            WHERE id = ?
+
+        `;
+
+
+
+        const valores = [
+
+            nombre,
+            categoria_id,
+            fecha_vencimiento,
+            cantidad,
+            stock_minimo,
+            codigo_barras,
+            marca,
+            sku,
+            proveedor_id,
+            numero_documento,
+            fecha_elaboracion,
+            precio_costo,
+            precio_venta,
+            id
+
+        ];
+
+
+
+        const [result] = await db.query(
+            sql,
+            valores
+        );
+
+
 
         res.json({
-            mensaje: "Producto actualizado correctamente"
+
+            success: true,
+
+            message: "Producto actualizado correctamente"
+
         });
 
-    });
+
+
+    } catch (error) {
+
+
+        console.error(
+            "Error al actualizar producto:",
+            error.message
+        );
+
+
+        res.status(500).json({
+
+            success: false,
+
+            message: "Error al actualizar producto"
+
+        });
+
+
+    }
 
 };
 
 
-// ================= DELETE =================
-exports.eliminarProducto = (req, res) => {
 
-    const { id } = req.params;
 
-    const sql = `
-        DELETE FROM productos
-        WHERE id = ?
-    `;
 
-    db.query(sql, [id], (err, result) => {
 
-        if (err) {
-            console.error("Error al eliminar:", err);
-            return res.status(500).json(err);
-        }
+
+
+// ================= ELIMINAR PRODUCTO =================
+
+exports.eliminarProducto = async (req, res) => {
+
+
+    try {
+
+
+        const { id } = req.params;
+
+
+
+        const sql = `
+
+            DELETE FROM productos
+
+            WHERE id = ?
+
+        `;
+
+
+
+        await db.query(
+            sql,
+            [id]
+        );
+
+
 
         res.json({
-            mensaje: "Producto eliminado correctamente"
+
+            success: true,
+
+            message: "Producto eliminado correctamente"
+
         });
 
-    });
+
+
+    } catch (error) {
+
+
+        console.error(
+            "Error al eliminar producto:",
+            error.message
+        );
+
+
+        res.status(500).json({
+
+            success: false,
+
+            message: "Error al eliminar producto"
+
+        });
+
+
+    }
 
 };

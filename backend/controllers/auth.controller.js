@@ -1,42 +1,258 @@
 const User = require("../models/user.model");
+
 const bcrypt = require("bcryptjs");
+
 const jwt = require("jsonwebtoken");
 
-// Se usará una variable de entorno para el secreto de JWT
-const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey"; 
+
+const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
+
+
+
+
+// ================= REGISTRO DE USUARIO =================
 
 exports.register = async (req, res) => {
-    try {
-        const { usuario, password, rol_id } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const userId = await User.create(usuario, hashedPassword, rol_id);
-        res.status(201).json({ message: "Usuario registrado con éxito", userId });
-    } catch (error) {
-        console.error("Error al registrar usuario:", error);
-        res.status(500).json({ message: "Error interno del servidor" });
-    }
-};
 
-exports.login = async (req, res) => {
     try {
-        const { usuario, password } = req.body;
-        const user = await User.getByUsername(usuario);
 
-        if (!user) {
-            return res.status(404).json({ message: "Usuario no encontrado" });
+
+        const {
+            usuario,
+            password,
+            rol_id
+        } = req.body;
+
+
+
+        if (!usuario || !password || !rol_id) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message: "Todos los campos son obligatorios"
+
+            });
+
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (password !== user.password) {
-    return res.status(401).json({
-        message: "Contraseña incorrecta"
-    });
-}
 
-        const token = jwt.sign({ id: user.id, rol_id: user.rol_id }, JWT_SECRET, { expiresIn: "1h" });
-        res.status(200).json({ token, user: { id: user.id, usuario: user.usuario, rol_id: user.rol_id } });
+
+        const usuarioExiste = await User.getByUsername(usuario);
+
+
+
+        if (usuarioExiste) {
+
+            return res.status(409).json({
+
+                success: false,
+
+                message: "El usuario ya existe"
+
+            });
+
+        }
+
+
+
+        const passwordEncriptada = await bcrypt.hash(
+            password,
+            10
+        );
+
+
+
+        const userId = await User.create(
+            usuario,
+            passwordEncriptada,
+            rol_id
+        );
+
+
+
+        res.status(201).json({
+
+            success: true,
+
+            message: "Usuario registrado correctamente",
+
+            data: {
+                id: userId,
+                usuario
+            }
+
+        });
+
+
+
     } catch (error) {
-        console.error("Error al iniciar sesión:", error);
-        res.status(500).json({ message: "Error interno del servidor" });
+
+
+        console.error(
+            "Error al registrar usuario:",
+            error.message
+        );
+
+
+
+        res.status(500).json({
+
+            success: false,
+
+            message: "Error interno del servidor"
+
+        });
+
+
     }
+
+};
+
+
+
+
+
+// ================= LOGIN =================
+
+exports.login = async (req, res) => {
+
+
+    try {
+
+
+        const {
+            usuario,
+            password
+        } = req.body;
+
+
+
+        if (!usuario || !password) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message: "Usuario y contraseña son obligatorios"
+
+            });
+
+        }
+
+
+
+        const user = await User.getByUsername(usuario);
+
+
+
+        if (!user) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message: "Usuario no encontrado"
+
+            });
+
+        }
+
+
+
+        const passwordCorrecta = await bcrypt.compare(
+            password,
+            user.password
+        );
+
+
+
+        if (!passwordCorrecta) {
+
+
+            return res.status(401).json({
+
+                success: false,
+
+                message: "Contraseña incorrecta"
+
+            });
+
+
+        }
+
+
+
+
+        const token = jwt.sign(
+
+            {
+                id: user.id,
+                usuario: user.usuario,
+                rol_id: user.rol_id,
+                rol: user.rol
+
+            },
+
+            JWT_SECRET,
+
+            {
+                expiresIn: "8h"
+            }
+
+        );
+
+
+
+
+
+        res.json({
+
+            success: true,
+
+            message: "Inicio de sesión correcto",
+
+            token,
+
+            user: {
+
+                id: user.id,
+
+                usuario: user.usuario,
+
+                rol_id: user.rol_id,
+
+                rol: user.rol
+
+            }
+
+        });
+
+
+
+
+
+    } catch (error) {
+
+
+        console.error(
+            "Error al iniciar sesión:",
+            error.message
+        );
+
+
+
+        res.status(500).json({
+
+            success: false,
+
+            message: "Error interno del servidor"
+
+        });
+
+
+    }
+
+
 };
