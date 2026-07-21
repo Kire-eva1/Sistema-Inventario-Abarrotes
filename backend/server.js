@@ -87,34 +87,23 @@ function verificarToken(req, res, next) {
 
 // ================= RUTAS =================
 
+console.log("auth:", typeof authRoutes);
+console.log("usuarios:", typeof usuariosRoutes);
+console.log("productos:", typeof productosRoutes);
+console.log("categorias:", typeof categoriasRoutes);
+console.log("token:", typeof verificarToken);
 
 // Login y autenticación
 app.use("/auth", authRoutes);
 
-
 // Usuarios
-app.use(
-    "/usuarios",
-    verificarToken,
-    usuariosRoutes
-);
-
+app.use("/usuarios", verificarToken, usuariosRoutes);
 
 // Productos
-app.use(
-    "/productos",
-    verificarToken,
-    productosRoutes
-);
-
+app.use("/productos", verificarToken, productosRoutes);
 
 // Categorías
-app.use(
-    "/categorias",
-    verificarToken,
-    categoriasRoutes
-);
-
+app.use("/categorias", verificarToken, categoriasRoutes);
 
 
 
@@ -216,11 +205,11 @@ app.use((err, req, res, next) => {
 
 
 // ================= INICIO SERVIDOR =================
-
+app.use("/usuarios", usuariosRoutes);
 app.listen(PORT, () => {
 
 
-    console.log('Servidor modular corriendo en http://localhost:${PORT}');
+    console.log(`Servidor modular corriendo en http://localhost:${PORT}`);
 
 
 });

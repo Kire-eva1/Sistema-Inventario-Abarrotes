@@ -4,14 +4,19 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const db = require("../db");
 
+console.log("RUTA USUARIOS CARGADA");
 
 // CREAR USUARIO
 
 router.post("/", async (req, res) => {
 
+    //console.log("========== POST /usuarios ==========");
+    //console.log(req.body);
+
     try {
 
         const {
+            rut,
             usuario,
             correo,
             password,
@@ -39,6 +44,7 @@ router.post("/", async (req, res) => {
         const sql = `
             INSERT INTO usuarios
             (
+                rut,
                 usuario,
                 correo,
                 password,
@@ -51,6 +57,7 @@ router.post("/", async (req, res) => {
         const [resultado] = await db.query(
             sql,
             [
+                rut,
                 usuario,
                 correo,
                 passwordHash,
@@ -69,26 +76,31 @@ router.post("/", async (req, res) => {
 
 
 
-    } catch(error) {
+    } 
+catch (error) {
 
+    console.error("================================");
+    console.error("ERROR CREANDO USUARIO");
+    console.error(error);
+    console.error("Mensaje:", error.message);
 
-        console.error(
-            "Error creando usuario:",
-            error
-        );
-
-
-        res.status(500).json({
-
-            error:"Error al crear usuario"
-
-        });
-
-
+    if (error.code) {
+        console.error("Código:", error.code);
     }
+
+    if (error.sqlMessage) {
+        console.error("SQL:", error.sqlMessage);
+    }
+
+    console.error("================================");
+
+    res.status(500).json({
+        error: error.message
+    });
+
+}
 
 
 });
-
 
 module.exports = router;

@@ -1,205 +1,127 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Sistema Abarrotes - Inventario Pro</title>
-
 
 <style>
 
-body {
-
+body 
+{
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
     background: #f0f2f5;
-
     padding: 20px;
-
     color:#333;
-
 }
 
 
-.container {
-
+.container 
+{
     display:flex;
-
     gap:30px;
-
     max-width:1400px;
-
     margin:auto;
-
 }
 
 
-.box {
-
+.box 
+{
     background:white;
-
     padding:25px;
-
     border-radius:12px;
-
     width:50%;
-
     box-shadow:0 4px 15px rgba(0,0,0,.08);
-
 }
 
 
-h1,h2 {
-
-    color:#1a73e8;
-
-}
-
-
-label {
-
+h1,h2 {color:#1a73e8;}
+label 
+{
     display:block;
-
     margin-top:12px;
-
     font-size:13px;
-
     font-weight:bold;
-
 }
 
-
-input,select,button {
-
-    width:100%;
-
-    padding:10px;
-
+input,select,button 
+{
+    width:100%; padding:10px; 
     margin-top:5px;
-
     border:1px solid #ddd;
-
     border-radius:6px;
-
     box-sizing:border-box;
-
 }
 
-
-button {
-
+button 
+{
     background:#28a745;
-
     color:white;
-
     border:none;
-
     cursor:pointer;
-
     font-weight:bold;
-
     margin-top:20px;
-
 }
 
+button:hover {opacity:.9;}
 
-button:hover {
-
-    opacity:.9;
-
-}
-
-
-.grid-form {
-
+.grid-form 
+{
     display:grid;
-
     grid-template-columns:1fr 1fr;
-
     gap:10px;
-
 }
 
 
-.full-width {
+.full-width {grid-column:span 2;}
 
-    grid-column:span 2;
-
-}
+.btn-logout {background:#dc3545; width:auto;}
 
 
-.btn-logout {
-
-    background:#dc3545;
-
-    width:auto;
-
-}
-
-
-table {
-
+table 
+{
     width:100%;
-
     border-collapse:collapse;
-
     margin-top:15px;
-
 }
 
 
-th,td {
-
+th,td 
+{
     border-bottom:1px solid #eee;
-
     padding:10px;
-
 }
 
 
-th {
-
+th 
+{
     background:#f8f9fa;
-
 }
 
 
-.alerta {
-
+.alerta 
+{
     padding:12px;
-
     margin-top:8px;
-
     border-radius:8px;
-
 }
 
 
-#login-section {
-
+#login-section 
+{
     max-width:400px;
-
     margin:100px auto;
-
 }
 
 
-#main-content {
-
+#main-content 
+{
     display:none;
-
 }
 
 
 </style>
-
 </head>
-
-
 <body>
 
 
@@ -207,78 +129,36 @@ th {
 <!-- LOGIN -->
 
 <div id="login-section" class="box">
-
-
 <h2>Acceso al Sistema</h2>
-
-
 <input id="login-usuario" placeholder="Usuario">
-
-
 <input 
 id="login-password"
 type="password"
 placeholder="Contraseña">
-
-
-<button onclick="login()">
-
-Ingresar
-
-</button>
-
-
+<button onclick="login()"> Ingresar </button>
 </div>
-
-
-
 
 
 <!-- SISTEMA -->
 
 <div id="main-content">
-
-
-
 <div style="display:flex;justify-content:space-between;align-items:center;">
-
-
-<h1>
-
-Inventario de Abarrotes
-
-</h1>
-
-
+<h1>Inventario de Abarrotes</h1>
 <div>
-
 <button 
 style="background:#007bff;width:auto"
 onclick="toggleUsuarios()">
-
-+ Usuario
-
++ Usuario 
 </button>
 
 
 <button 
 class="btn-logout"
 onclick="logout()">
-
 Salir
-
 </button>
-
-
 </div>
-
-
 </div>
-
-
-
-
-
 <div class="container">
 
 
@@ -286,43 +166,24 @@ Salir
 <!-- PRODUCTOS -->
 
 <div class="box">
-
-
-<h2>
-
-Registro Producto
-
-</h2>
-
-
+<h2>Registro Producto</h2>
 <div class="grid-form">
-
-
-
 <div class="full-width">
-
 <label>
 
 Nombre *
 
 </label>
-
 <input id="nombre">
-
 </div>
 
 
 
 
 <div>
-
 <label>
-
 Categoría *
-
 </label>
-
-
 <select id="categoria">
 
 <option value="">
@@ -330,260 +191,151 @@ Categoría *
 Seleccione...
 
 </option>
-
 </select>
-
-
 </div>
 
 
 
 
 <div>
-
 <label>
-
 Marca
-
 </label>
-
 <input id="marca">
-
 </div>
 
-
-
-
 <div>
-
 <label>
-
 Código barras
-
 </label>
 
 <input id="codigo_barras">
-
 </div>
 
 
-
-
 <div>
-
 <label>
-
 SKU
-
 </label>
-
 <input id="sku">
-
 </div>
 
 
-
-
 <div>
-
 <label>
-
 Proveedor ID
-
 </label>
 
 <input id="proveedor_id" value="1">
-
 </div>
 
 
-
-
 <div>
-
 <label>
-
 Documento
-
 </label>
 
 <input id="numero_documento">
-
 </div>
 
 
-
-
 <div>
-
 <label>
-
 Fecha elaboración
-
 </label>
 
 <input type="date" id="fecha_elaboracion">
-
 </div>
 
 
-
-
 <div>
-
 <label>
-
 Fecha vencimiento *
-
 </label>
 
 <input type="date" id="fecha">
-
 </div>
 
 
-
-
 <div>
-
 <label>
-
 Cantidad
-
 </label>
 
 <input type="number" id="cantidad" value="0">
-
 </div>
 
 
-
-
 <div>
-
 <label>
-
 Stock mínimo
-
 </label>
 
 <input type="number" id="stock" value="0">
-
 </div>
 
 
-
-
 <div>
-
 <label>
-
 Precio costo
-
 </label>
 
 <input type="number" id="precio_costo" value="0">
-
 </div>
-
-
 
 
 <div>
-
 <label>
-
 Precio venta
-
 </label>
 
 <input type="number" id="precio_venta" value="0">
-
 </div>
 
-
-
 </div>
-
 
 
 <button onclick="guardar()">
-
 Guardar Producto
-
 </button>
-
-
 </div>
-
-
-
-
 
 
 
 <!-- LISTADO -->
-
 <div class="box">
-
-
 <h2>
-
 Productos
-
 </h2>
 
-
 <table>
-
-
 <thead>
-
 <tr>
-
 <th>
 Producto
 </th>
-
 
 <th>
 Categoría
 </th>
 
-
 <th>
 Vence
 </th>
-
 
 <th>
 Stock
 </th>
 
-
 </tr>
 
-
 </thead>
-
-
-<tbody id="tabla">
-
-
-</tbody>
-
+<tbody id="tabla"> </tbody>
 
 </table>
-
-
-
-
 <h2>
-
 Alertas
-
 </h2>
-
 
 <button 
 style="background:#17a2b8"
@@ -592,80 +344,59 @@ onclick="imprimirAlertas()">
 Imprimir Alertas
 
 </button>
-
-
-
 <div id="alertas">
-
+</div>
+</div>
+</div>
 </div>
 
-
-
-</div>
-
-
-
-</div>
-
-
-
-</div>
 <!-- PANEL USUARIOS -->
 
 <div id="panel-usuarios" style="display:none;" class="container">
-
 <div class="box">
-
 <h2>
 Crear Usuario
 </h2>
-
-
 <div class="grid-form">
-
-
 <div>
 
 <label>
 Usuario
 </label>
-
 <input id="nuevoUsuario">
+</div>
 
+<div>
+<label>
+RUT
+</label>
+<input 
+id="nuevoRut"
+placeholder="11.111.111-1">
 </div>
 
 
-
 <div>
-
 <label>
 Correo
 </label>
 
 <input id="nuevoCorreo" type="email">
-
 </div>
 
 
 
 <div>
-
 <label>
 Contraseña
 </label>
-
 <input id="nuevoPassword" type="password">
-
 </div>
 
-
-
 <div>
-
 <label>
 Rol
 </label>
-
 <select id="nuevoRol">
 
 <option value="1">
@@ -681,39 +412,22 @@ Bodega
 </option>
 
 </select>
-
-
 </div>
 
 
 </div>
-
-
 <button onclick="crearUsuario()">
-
 Guardar Usuario
-
 </button>
-
-
 </div>
 
 
 </div>
-
-
-
-
-
-
 <script>
-
 
 const API_URL = "http://localhost:3000";
 
-
 let token = localStorage.getItem("token");
-
 
 
 
@@ -791,15 +505,12 @@ async function login(){
             "token",
             token
         );
-
-
         mostrarApp();
 
+    }
+    catch(error)
 
-
-    }catch(error){
-
-
+    { 
         alert(error.message);
 
 
@@ -810,27 +521,20 @@ async function login(){
 
 
 
-
-
-
-
 // ================= MOSTRAR APP =================
 
 
-function mostrarApp(){
-
+function mostrarApp()
+{
 
     document.getElementById(
         "login-section"
     ).style.display="none";
 
 
-
     document.getElementById(
         "main-content"
     ).style.display="block";
-
-
 
     cargarCategorias();
 
@@ -850,22 +554,11 @@ function mostrarApp(){
 // ================= LOGOUT =================
 
 
-function logout(){
-
-
-    localStorage.removeItem(
-        "token"
-    );
-
-
+function logout()
+{
+    localStorage.removeItem("token");
     location.reload();
-
-
 }
-
-
-
-
 
 
 
@@ -873,21 +566,15 @@ function logout(){
 // ================= FETCH API =================
 
 
-async function apiFetch(endpoint, options={}){
-
-
-    if(!options.headers){
-
+async function apiFetch(endpoint, options={})
+{
+    if(!options.headers)
+    {
         options.headers={};
-
     }
-
-
 
     options.headers.Authorization =
         `Bearer ${token}`;
-
-
 
     const response =
         await fetch(
@@ -896,21 +583,13 @@ async function apiFetch(endpoint, options={}){
         );
 
 
-
-    if(response.status===401){
-
+    if(response.status===401)
+    {
         logout();
-
     }
 
-
-
     return response;
-
-
 }
-
-
 
 
 
@@ -919,115 +598,70 @@ async function apiFetch(endpoint, options={}){
 // ================= USUARIOS =================
 
 
-function toggleUsuarios(){
-
-
+function toggleUsuarios()
+{
     const panel =
-    document.getElementById(
-        "panel-usuarios"
-    );
-
-
-
-    panel.style.display =
-        panel.style.display==="none"
-        ?"flex"
-        :"none";
-
-
+    document.getElementById
+    ("panel-usuarios"); panel.style.display = panel.style.display==="none"?"flex":"none";
 }
 
+async function crearUsuario()
+{
+    console.log("Entró a crearUsuario()");
+    const body = 
+    {
+    rut: document.getElementById("nuevoRut").value,
+    usuario: document.getElementById("nuevoUsuario").value,
+    correo: document.getElementById("nuevoCorreo").value,
+    password: document.getElementById("nuevoPassword").value,
+    rol_id: parseInt(document.getElementById("nuevoRol").value)
+};
 
-
-
-
-async function crearUsuario(){
-
-
-    const body={
-
-
-        usuario:
-        document.getElementById("nuevoUsuario").value,
-
-
-        password:
-        document.getElementById("nuevoPassword").value,
-
-
-        rol_id:
-        document.getElementById("nuevoRol").value
-
-
-    };
-
-
+    if (!body.usuario || !body.correo || !body.password)
+    {
+        alert("Complete todos los campos.");
+        return;
+    }
 
     try{
-
-
-        const response =
-        await apiFetch(
+        const response = await apiFetch
+        (
             "/usuarios",
             {
-
-                method:"POST",
-
-                headers:{
-                    "Content-Type":"application/json"
+                method:"POST", headers:
+                {
+                 "Content-Type":"application/json"
                 },
 
                 body:JSON.stringify(body)
-
             }
         );
+       
+const data = await response.json();
 
+if (response.ok) {
 
+    alert(data.mensaje || "Usuario creado correctamente");
 
-        const data =
-        await response.json();
+    document.getElementById("nuevoUsuario").value = "";
+    document.getElementById("nuevoPassword").value = "";
+    document.getElementById("nuevoCorreo").value = "";
+    document.getElementById("nuevoRol").value = "2";
 
+} else {
 
-
-        if(data.success){
-
-            alert(
-                "Usuario creado correctamente"
-            );
-
-
-        }else{
-
-
-            alert(
-                data.message
-            );
-
-
-        }
-
-
-
-    }catch(error){
-
-
-        console.error(error);
-
-
-        alert(
-            "Error al crear usuario"
-        );
-
-
-    }
-
+    alert(data.error || data.message || "Error al crear usuario");
 
 }
 
 
 
-
-
+    }
+    catch(error)
+    {
+        console.error(error); alert("Error al crear usuario");
+    }
+}
 
 
 
